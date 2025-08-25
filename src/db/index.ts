@@ -2,14 +2,14 @@ import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "./schema/index";
+import { schemas } from "./schema/index";
 
 async function dbConnector(server: FastifyInstance) {
 	const pool = new Pool({
 		connectionString: process.env.DATABASE_URL,
 	});
 
-	const connection = drizzle(pool, { schema });
+	const connection = drizzle(pool, { schema: schemas });
 
 	if (!connection) {
 		throw new Error("Failed to connect to database");
