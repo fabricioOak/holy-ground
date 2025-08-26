@@ -5,6 +5,7 @@ import cookiePlugin from "./plugins/cookie.plugin.ts";
 import helmetPlugin from "./plugins/helmet.plugin.ts";
 import rateLimitPlugin from "./plugins/rate-limit.plugin.ts";
 import dbConnector from "./db/index.ts";
+import { MainContainer } from "./container/index.ts";
 
 const server = fastify({
 	logger: {
@@ -25,5 +26,8 @@ server.register(swaggerPlugin);
 server.register(helmetPlugin);
 server.register(rateLimitPlugin);
 server.register(dbConnector);
+
+const container = MainContainer.getInstance(server);
+server.decorate("container", container);
 
 export { server };
