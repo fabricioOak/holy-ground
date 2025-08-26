@@ -44,7 +44,7 @@ const swaggerPlugin = async (server: FastifyInstance) => {
 	}
 
 	server.withTypeProvider<TypeBoxTypeProvider>();
-	server.register(routes);
+	server.register(routes, { prefix: "/api" });
 };
 
 export default fp(swaggerPlugin, { name: "swagger-plugin" });
