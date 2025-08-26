@@ -15,7 +15,7 @@ async function dbConnector(server: FastifyInstance) {
 		throw new Error("Failed to connect to database");
 	}
 
-	server.decorate("Database", connection);
+	server.decorate("db", connection);
 }
 
 export default fp(dbConnector, { name: "db-connector" });
