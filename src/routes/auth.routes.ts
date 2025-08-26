@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { LoginDTO } from "../dto/auth.dto";
-import fastifyCookie from "@fastify/cookie";
 
 export async function authRoutes(server: FastifyInstance) {
 	const { authController } = server.container.modules.auth;
@@ -21,7 +20,6 @@ export async function authRoutes(server: FastifyInstance) {
 		{
 			onRequest: [server.authenticate],
 			schema: {
-				security: [{ fastifyCookie: [] }],
 				description: "User logout",
 				tags: ["Authentication"],
 			},
