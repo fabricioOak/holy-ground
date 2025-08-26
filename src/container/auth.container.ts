@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { UserRepository } from "../repositories/user.repository";
+import { UserRepository } from "../repositories/users/users.repository";
 import { AuthService } from "../services/auth.service";
 import { AuthController } from "../controllers/auth.controller";
 
