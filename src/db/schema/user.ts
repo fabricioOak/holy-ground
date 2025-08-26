@@ -10,7 +10,7 @@ import { EUserRoles } from "../../common/enums/user.enum";
 
 export const users = pgTable("users", {
 	id: uuid("id").defaultRandom().primaryKey(),
-	emai: varchar("email", { length: 255 }).notNull().unique(),
+	email: varchar("email", { length: 255 }).notNull().unique(),
 	password: varchar("password", { length: 255 }).notNull(),
 	firstName: varchar("first_name", { length: 100 }).notNull(),
 	lastName: varchar("last_name", { length: 100 }).notNull(),
