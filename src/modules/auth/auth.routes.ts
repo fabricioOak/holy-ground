@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { LoginDTO, LoginResponseDTO } from "../dto/auth.dto";
-import { ApiResponse } from "../common/utils/responses";
+import { LoginDTO, LoginResponseDTO } from "./auth.dto";
+import { ApiResponse } from "../../shared/utils/responses";
 
 export async function authRoutes(server: FastifyInstance) {
 	const { authController } = server.container.modules.auth;

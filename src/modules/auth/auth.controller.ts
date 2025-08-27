@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { LoginUseCase } from "../useCases/auth/login.useCase";
-import { LogoutUseCase } from "../useCases/auth/logout.useCase";
-import type { LoginInput } from "../dto/auth.dto";
+import { LoginUseCase } from "../auth/useCases/login.useCase";
+import { LogoutUseCase } from "../auth/useCases/logout.useCase";
+import type { LoginInput } from "./auth.dto";
 
 export class AuthController {
 	constructor(

@@ -8,7 +8,6 @@ import {
 import fastifySwagger from "@fastify/swagger";
 import apiReferenceConfiguration from "@scalar/fastify-api-reference";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import routes from "../routes";
 
 const swaggerPlugin = async (server: FastifyInstance) => {
 	if (process.env.NODE_ENV !== "production") {
@@ -44,7 +43,6 @@ const swaggerPlugin = async (server: FastifyInstance) => {
 	}
 
 	server.withTypeProvider<TypeBoxTypeProvider>();
-	server.register(routes, { prefix: "/api" });
 };
 
 export default fp(swaggerPlugin, { name: "swagger-plugin" });
