@@ -4,10 +4,10 @@ import type {
 	RouteGenericInterface,
 } from "fastify";
 import type { JWT } from "@fastify/jwt";
-import { EUserRoles } from "../common/enums/user.enum";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { EUserRoles } from "../shared/enums/user.enum";
 import { schemas } from "../db/schema";
-import { MainContainer } from "../container";
+import { MainContainer } from "../shared/container/index";
+import { DbConnection } from "../shared/infra/db";
 
 type UserPayload = {
 	id: string;
@@ -28,7 +28,7 @@ declare module "fastify" {
 			req: FastifyRequest<T>,
 			reply: FastifyReply
 		): void | Promise<void>;
-		db: NodePgDatabase<typeof schemas>;
+		db: DbConnection;
 		container: MainContainer;
 	}
 }

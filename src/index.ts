@@ -1,10 +1,12 @@
-import { server } from "./server.ts";
+import { buildServer } from "./shared/infra/http/server.ts";
 
 async function start() {
 	try {
-		await server.listen({ port: Number(process.env.PORT), host: "0.0.0.0" });
+		const server = await buildServer();
+		const port = Number(process.env.PORT) || 3000;
+		await server.listen({ port, host: "0.0.0.0" });
 	} catch (err) {
-		server.log.error(err);
+		console.error(err);
 		process.exit(1);
 	}
 }
