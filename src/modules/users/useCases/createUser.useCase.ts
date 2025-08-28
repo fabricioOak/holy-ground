@@ -1,4 +1,4 @@
-import { IUserRepository } from "../users.model";
+import { IUserRepository } from "../users.repository";
 import { CreateUserInput, UserResponse } from "../user.dto";
 import { IPasswordHasher } from "../../../shared/interfaces/passwordHasher";
 

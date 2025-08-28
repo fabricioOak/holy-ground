@@ -6,8 +6,20 @@ import {
 	UpdateUserInput,
 	ReadListUsersQuery,
 } from "../users/user.dto";
-import { IUserRepository } from "./users.model";
 import { DbConnection } from "../../shared/infra/db/index";
+
+export interface IUserRepository {
+	findByEmail(email: string): Promise<TUser | null>;
+	findById(id: string): Promise<TUser | null>;
+	create(data: CreateUserInput): Promise<UserResponse>;
+	update(id: string, data: UpdateUserInput): Promise<UserResponse>;
+	delete(id: string): Promise<boolean>;
+	findMany(query: ReadListUsersQuery): Promise<{
+		users: UserResponse[];
+		total: number;
+	}>;
+	updatePassword(id: string, password: string): Promise<boolean>;
+}
 
 export class UserRepository implements IUserRepository {
 	constructor(private db: DbConnection) {}

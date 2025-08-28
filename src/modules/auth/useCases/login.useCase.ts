@@ -1,5 +1,5 @@
 import { LoginInput } from "../auth.dto";
-import { IUserRepository } from "../../users/users.model";
+import { IUserRepository } from "../../users/users.repository";
 import { IPasswordHasher } from "../../../shared/interfaces/passwordHasher";
 import { ITokenService } from "../../../shared/interfaces/tokenService";
 

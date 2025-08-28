@@ -1,4 +1,4 @@
-import { IUserRepository } from "../users.model";
+import { IUserRepository } from "../users.repository";
 import { ReadListUsersQuery, UserResponse } from "../user.dto";
 
 export interface ReadListUsersResult {
