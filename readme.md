@@ -1,9 +1,3 @@
-Of course. Creating a high-quality `README.md` is a crucial step to make your project professional and easy to use for others (and for your future self\!).
-
-Here is a comprehensive `README.md` template in English, tailored specifically to the architecture and technologies we've built together. Just copy and paste this into a `README.md` file in the root of your project.
-
------
-
 # HOLY-GROUND API 🚀
 
 A robust and scalable backend API for the HOLY-GROUND project, built with a modern, decoupled architecture.
@@ -113,13 +107,6 @@ These are the environment variables used by the application. They should be defi
 | `POSTGRES_DB`    | The name of the PostgreSQL database.                                                                    | `holyground`         |
 | `DATABASE_URL`   | The full connection string for the database. **Must point to the Docker service name (`db`)**.            | (See `.env.example`) |
 
-## 🧪 Running Tests
-
-To run the test suite, use the following command:
-
-```bash
-npm test
-```
 
 ## 📚 Project Structure
 
@@ -129,17 +116,8 @@ The project follows a modular architecture, designed for scalability and separat
   - `src/shared/`: Contains code that is shared across multiple modules.
       - `infra/`: The infrastructure layer, containing adapters for external concerns like the database (`db`), the web server (`http`), and security services.
       - `container/`: Configuration for the Tsyringe dependency injection container.
-      - `guards/`, `errors/`, `interfaces/`, `utils/`: Reusable components shared by the application.
+      - `interfaces/`, `utils/`: Reusable components shared by the application.
 
-## 🤝 Contributing
-
-Contributions are welcome\! Please feel free to open an issue or submit a pull request.
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'feat(scope): Add some AmazingFeature'`) - We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
 
 ## 📄 License
 
