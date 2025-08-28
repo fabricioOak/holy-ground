@@ -40,7 +40,7 @@ Follow these steps to get the project up and running locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone git@github.com:fabricioOak/holy-ground.git
 cd holy-ground
 ````
 
