@@ -1,10 +1,11 @@
 import { IUserRepository } from "../users.repository";
 import { ReadListUsersQuery, UserResponse } from "../user.dto";
+import { inject, injectable } from "tsyringe";
 
 export interface ReadListUsersResult {
 	success: boolean;
 	data?: {
-		users: UserResponse[];
+		items: UserResponse[];
 		pagination: {
 			page: number;
 			limit: number;
@@ -17,20 +18,25 @@ export interface ReadListUsersResult {
 	message: string;
 }
 
+@injectable()
 export class ReadListUsersUseCase {
-	constructor(private readonly userRepository: IUserRepository) {}
+	constructor(
+		@inject("IUserRepository") private readonly userRepository: IUserRepository
+	) {}
 
 	async execute(query: ReadListUsersQuery): Promise<ReadListUsersResult> {
 		try {
 			const { total, users } = await this.userRepository.findMany(query);
 			const { page = 1, limit = 20 } = query;
 
+			console.log("execute", query);
+
 			const totalPages = Math.ceil(total / limit);
 
 			return {
 				success: true,
 				data: {
-					users,
+					items: users,
 					pagination: {
 						page,
 						limit,

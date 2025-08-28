@@ -7,6 +7,7 @@ import {
 	ReadListUsersQuery,
 } from "../users/user.dto";
 import { DbConnection } from "../../shared/infra/db/index";
+import { inject, injectable } from "tsyringe";
 
 export interface IUserRepository {
 	findByEmail(email: string): Promise<TUser | null>;
@@ -21,8 +22,9 @@ export interface IUserRepository {
 	updatePassword(id: string, password: string): Promise<boolean>;
 }
 
+@injectable()
 export class UserRepository implements IUserRepository {
-	constructor(private db: DbConnection) {}
+	constructor(@inject("DbConnection") private db: DbConnection) {}
 	async findByEmail(email: string): Promise<TUser | null> {
 		const result = await this.db
 			.select()
@@ -50,10 +52,6 @@ export class UserRepository implements IUserRepository {
 			})
 			.where(eq(users.id, id))
 			.returning();
-
-		if (!result.length) {
-			throw new Error("User not found");
-		}
 
 		return this.mapToResponse(result[0]);
 	}

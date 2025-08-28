@@ -1,3 +1,6 @@
+import { injectable } from "tsyringe";
+
+@injectable()
 export class LogoutUseCase {
 	constructor() {}
 	async execute(userId?: string) {

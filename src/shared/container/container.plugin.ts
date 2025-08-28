@@ -1,9 +1,11 @@
 import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { MainContainer } from "./index";
+import { container } from "./index";
 
 async function containerPlugin(server: FastifyInstance) {
-	const container = MainContainer.getInstance(server);
+	container.register<FastifyInstance>("FastifyInstance", { useValue: server });
+	container.register("DbConnection", { useValue: server.db });
+
 	server.decorate("container", container);
 }
 

@@ -2,6 +2,7 @@ import { LoginInput } from "../auth.dto";
 import { IUserRepository } from "../../users/users.repository";
 import { IPasswordHasher } from "../../../shared/interfaces/passwordHasher";
 import { ITokenService } from "../../../shared/interfaces/tokenService";
+import { inject, injectable } from "tsyringe";
 
 export interface LoginResult {
 	success: boolean;
@@ -19,11 +20,12 @@ export interface LoginResult {
 	message: string;
 }
 
+@injectable()
 export class LoginUseCase {
 	constructor(
-		private userRepository: IUserRepository,
-		private passwordHasher: IPasswordHasher,
-		private tokenService: ITokenService
+		@inject("IUserRepository") private userRepository: IUserRepository,
+		@inject("IPasswordHasher") private passwordHasher: IPasswordHasher,
+		@inject("ITokenService") private tokenService: ITokenService
 	) {}
 
 	async execute(input: LoginInput): Promise<LoginResult> {

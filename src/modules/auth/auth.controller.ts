@@ -2,17 +2,19 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { LoginUseCase } from "../auth/useCases/login.useCase";
 import { LogoutUseCase } from "../auth/useCases/logout.useCase";
 import type { LoginInput } from "./auth.dto";
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class AuthController {
 	constructor(
-		private loginUseCase: LoginUseCase,
-		private logoutUseCase: LogoutUseCase
+		@inject(LoginUseCase) private loginUseCase: LoginUseCase,
+		@inject(LogoutUseCase) private logoutUseCase: LogoutUseCase
 	) {}
 
-	async login(
+	public login = async (
 		request: FastifyRequest<{ Body: LoginInput }>,
 		reply: FastifyReply
-	) {
+	) => {
 		try {
 			const result = await this.loginUseCase.execute(request.body);
 
@@ -42,9 +44,9 @@ export class AuthController {
 				.status(500)
 				.send({ success: false, message: "Internal server error", data: null });
 		}
-	}
+	};
 
-	async logout(request: FastifyRequest, reply: FastifyReply) {
+	public logout = async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			const userId = request.user.id;
 
@@ -67,5 +69,5 @@ export class AuthController {
 				.status(500)
 				.send({ success: false, message: "Internal server error", data: null });
 		}
-	}
+	};
 }

@@ -1,8 +1,10 @@
 import { FastifyInstance } from "fastify";
-import { CreateUserDTO, UserResponseDTO } from "./user.dto";
+import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from "./user.dto";
+import { ApiPaginated, ApiResponse } from "../../shared/utils/responses";
+import { UserController } from "./users.controller";
 
 export async function usersRoutes(server: FastifyInstance) {
-	const { userController } = server.container.modules.users;
+	const { create, update, readlist } = server.container.resolve(UserController);
 
 	server.post(
 		"/",
@@ -10,19 +12,45 @@ export async function usersRoutes(server: FastifyInstance) {
 			schema: {
 				body: CreateUserDTO,
 				response: {
-					201: {
-						type: "object",
-						properties: {
-							success: { type: "boolean" },
-							data: UserResponseDTO,
-							message: { type: "string" },
-						},
-					},
+					201: ApiResponse(UserResponseDTO),
+					400: ApiResponse(null),
 				},
 				tags: ["Users"],
-				description: "Criar novo usuário (apenas admins)",
+				description: "Creates a new user",
 			},
 		},
-		userController.create.bind(userController)
+		create
+	);
+
+	server.put(
+		"/",
+		{
+			preHandler: [server.authenticate],
+			schema: {
+				body: UpdateUserDTO,
+				response: {
+					200: ApiResponse(UserResponseDTO),
+					400: ApiResponse(null),
+				},
+				tags: ["Users"],
+				description: "Updates an existing user",
+			},
+		},
+		update
+	);
+
+	server.get(
+		"/",
+		{
+			preHandler: [server.authenticate],
+			schema: {
+				response: {
+					200: ApiPaginated(UserResponseDTO),
+				},
+				tags: ["Users"],
+				description: "Returns a list of all users",
+			},
+		},
+		readlist
 	);
 }

@@ -8,6 +8,7 @@ import { EUserRoles } from "../shared/enums/user.enum";
 import { schemas } from "../db/schema";
 import { MainContainer } from "../shared/container/index";
 import { DbConnection } from "../shared/infra/db";
+import { DependencyContainer } from "tsyringe";
 
 type UserPayload = {
 	id: string;
@@ -29,7 +30,7 @@ declare module "fastify" {
 			reply: FastifyReply
 		): void | Promise<void>;
 		db: DbConnection;
-		container: MainContainer;
+		container: DependencyContainer;
 	}
 }
 

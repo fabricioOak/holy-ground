@@ -1,6 +1,7 @@
 import { IUserRepository } from "../users.repository";
 import { CreateUserInput, UserResponse } from "../user.dto";
 import { IPasswordHasher } from "../../../shared/interfaces/passwordHasher";
+import { injectable, inject } from "tsyringe";
 
 export interface CreateUserResult {
 	success: boolean;
@@ -8,10 +9,11 @@ export interface CreateUserResult {
 	message: string;
 }
 
+@injectable()
 export class CreateUserUseCase {
 	constructor(
-		private userRepository: IUserRepository,
-		private passwordHasher: IPasswordHasher
+		@inject("IUserRepository") private userRepository: IUserRepository,
+		@inject("IPasswordHasher") private passwordHasher: IPasswordHasher
 	) {}
 
 	async execute(input: CreateUserInput): Promise<CreateUserResult> {

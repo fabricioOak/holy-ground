@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { buildServer } from "./shared/infra/http/server.ts";
 
 async function start() {

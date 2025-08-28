@@ -1,43 +1,22 @@
+import "reflect-metadata";
+import { container, instanceCachingFactory } from "tsyringe";
 import { FastifyInstance } from "fastify";
-import {
-	AuthContainer,
-	type AuthDependencies,
-} from "../../modules/auth/auth.container";
-import {
-	UserContainer,
-	type UserDependencies,
-} from "../../modules/users/users.container";
+
+import { UserRepository } from "../../modules/users/users.repository";
 import { Argon2PasswordHasher } from "../utils/argon2";
+import { FastifyTokenService } from "../infra/http/security/fastifyTokenService";
 
-export interface AppDependencies {
-	auth: AuthDependencies;
-	users: UserDependencies;
-}
+container.register("IPasswordHasher", {
+	useClass: Argon2PasswordHasher,
+});
+container.register("IUserRepository", {
+	useFactory: instanceCachingFactory((c) => c.resolve(UserRepository)),
+});
+container.register("ITokenService", {
+	useFactory: instanceCachingFactory(
+		(c) =>
+			new FastifyTokenService(c.resolve<FastifyInstance>("FastifyInstance").jwt)
+	),
+});
 
-export class MainContainer {
-	private static instance: MainContainer;
-	public readonly modules: AppDependencies;
-
-	private constructor(private server: FastifyInstance) {
-		const passwordHasher = new Argon2PasswordHasher();
-
-		const authContainer = new AuthContainer(
-			this.server,
-			this.server.db,
-			passwordHasher
-		);
-		const userContainer = new UserContainer(this.server.db, passwordHasher);
-
-		this.modules = {
-			auth: authContainer.dependencies,
-			users: userContainer.dependencies,
-		};
-	}
-
-	static getInstance(server: FastifyInstance): MainContainer {
-		if (!MainContainer.instance) {
-			MainContainer.instance = new MainContainer(server);
-		}
-		return MainContainer.instance;
-	}
-}
+export { container };

@@ -1,9 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { LoginDTO, LoginResponseDTO } from "./auth.dto";
 import { ApiResponse } from "../../shared/utils/responses";
+import { AuthController } from "./auth.controller";
 
 export async function authRoutes(server: FastifyInstance) {
-	const { authController } = server.container.modules.auth;
+	const { login, logout } = server.container.resolve(AuthController);
 
 	server.post(
 		"/login",
@@ -17,7 +18,7 @@ export async function authRoutes(server: FastifyInstance) {
 				description: "User login",
 			},
 		},
-		authController.login.bind(authController)
+		login
 	);
 
 	server.post(
@@ -29,6 +30,6 @@ export async function authRoutes(server: FastifyInstance) {
 				tags: ["Authentication"],
 			},
 		},
-		authController.logout.bind(authController)
+		logout
 	);
 }

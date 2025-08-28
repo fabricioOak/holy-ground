@@ -1,17 +1,14 @@
 import { Type, type TSchema } from "@sinclair/typebox";
 
-export const ApiResponse = <T extends TSchema>(
-	data: T,
-	opts?: { $id?: string }
-) =>
-	Type.Object(
-		{
-			success: Type.Boolean(),
-			data,
-			message: Type.String(),
-		},
-		opts?.$id ? { $id: opts.$id } : {}
-	);
+const NullableData = Type.Null();
+
+export function ApiResponse<T extends TSchema>(dataSchema: T | null) {
+	return Type.Object({
+		success: Type.Boolean({ default: true }),
+		message: Type.String(),
+		data: dataSchema ? dataSchema : NullableData,
+	});
+}
 
 export const ApiPaginated = <T extends TSchema>(
 	item: T,
