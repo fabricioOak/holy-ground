@@ -1,26 +1,28 @@
 import fastify from "fastify";
-import swaggerPlugin from "../../../plugins/swagger.plugin.ts";
-import jwtPlugin from "../../../plugins/jwt.plugin.ts";
-import cookiePlugin from "../../../plugins/cookie.plugin.ts";
-import helmetPlugin from "../../../plugins/helmet.plugin.ts";
-import rateLimitPlugin from "../../../plugins/rate-limit.plugin.ts";
-import dbConnector from "../../../shared/infra/db/index.ts";
+import swaggerPlugin from "../../../plugins/swagger.plugin";
+import jwtPlugin from "../../../plugins/jwt.plugin";
+import cookiePlugin from "../../../plugins/cookie.plugin";
+import helmetPlugin from "../../../plugins/helmet.plugin";
+import rateLimitPlugin from "../../../plugins/rate-limit.plugin";
+import dbConnector from "../../../shared/infra/db/index";
 import mainRouter from "./routes";
-import containerPlugin from "../../container/container.plugin.ts";
-import { ValidationError } from "../../utils/validationError.ts";
+import containerPlugin from "../../container/container.plugin";
+import { ValidationError } from "../../utils/validationError";
+
+const loggerConfig = {
+	transport: {
+		target: "pino-pretty",
+		options: {
+			colorize: true,
+			translateTime: "HH:MM:ss Z",
+			ignore: "pid,hostname",
+		},
+	},
+};
 
 export async function buildServer() {
 	const server = await fastify({
-		logger: {
-			transport: {
-				target: "pino-pretty",
-				options: {
-					colorize: true,
-					translateTime: "HH:MM:ss Z",
-					ignore: "pid,hostname",
-				},
-			},
-		},
+		logger: process.env.NODE_ENV === "production" ? false : loggerConfig,
 	});
 
 	server.setErrorHandler((error, request, reply) => {
