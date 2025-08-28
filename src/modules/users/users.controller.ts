@@ -3,11 +3,13 @@ import { inject, injectable } from "tsyringe";
 import { CreateUserUseCase } from "../users/useCases/createUser.useCase";
 import { UpdateUserUseCase } from "./useCases/updateUser.useCase";
 import { ReadListUsersUseCase } from "./useCases/readListUser.useCase";
+import { ReadOneUserUseCase } from "./useCases/readOne.useCase";
 import {
 	CreateUserInput,
 	UpdateUserInput,
 	ReadListUsersQuery,
 } from "../users/user.dto";
+import { DeleteUserUseCase } from "./useCases/deleteUser.useCase";
 
 @injectable()
 export class UserController {
@@ -15,114 +17,65 @@ export class UserController {
 		@inject(CreateUserUseCase) private createUserUseCase: CreateUserUseCase,
 		@inject(UpdateUserUseCase) private updateUserUseCase: UpdateUserUseCase,
 		@inject(ReadListUsersUseCase)
-		private readListUsersUseCase: ReadListUsersUseCase
+		private readListUsersUseCase: ReadListUsersUseCase,
+		@inject(DeleteUserUseCase) private deleteUserUseCase: DeleteUserUseCase,
+		@inject(ReadOneUserUseCase) private readOneUserUseCase: ReadOneUserUseCase
 	) {}
 
 	public create = async (
-		request: FastifyRequest<{
-			Body: CreateUserInput;
-		}>,
+		request: FastifyRequest<{ Body: CreateUserInput }>,
 		reply: FastifyReply
 	) => {
-		try {
-			const result = await this.createUserUseCase.execute(request.body);
+		const result = await this.createUserUseCase.execute(request.body);
 
-			if (!result.success) {
-				return reply.status(400).send({
-					success: result.success,
-					data: result.data || null,
-					message: result.message,
-				});
-			}
-
-			return reply.status(201).send({
-				success: result.success,
-				data: result.data || null,
-				message: result.message,
-			});
-		} catch (error) {
-			request.log.error(error);
-			return reply.status(500).send({
-				success: false,
-				message: "Internal server error",
-				data: null,
-			});
+		if (!result.success) {
+			return reply.status(400).send(result);
 		}
+		return reply.status(201).send(result);
 	};
 
 	public update = async (
-		request: FastifyRequest<{
-			Body: UpdateUserInput;
-			Params: { id: string };
-		}>,
+		request: FastifyRequest<{ Body: UpdateUserInput; Params: { id: string } }>,
 		reply: FastifyReply
 	) => {
-		try {
-			const { id } = request.params;
-			const result = await this.updateUserUseCase.execute(id, request.body);
+		const { id } = request.params;
+		const result = await this.updateUserUseCase.execute(id, request.body);
 
-			if (!result.success) {
-				return reply.status(400).send({
-					success: result.success,
-					data: result.data || null,
-					message: result.message,
-				});
-			}
-
-			return reply.status(200).send({
-				success: result.success,
-				data: result.data || null,
-				message: result.message,
-			});
-		} catch (error) {
-			request.log.error(error);
-			return reply.status(500).send({
-				success: false,
-				message: "Internal server error",
-				data: null,
-			});
+		if (!result.success) {
+			return reply.status(400).send(result);
 		}
+		return reply.status(200).send(result);
 	};
 
 	public readlist = async (
-		request: FastifyRequest<{
-			Querystring: ReadListUsersQuery;
-		}>,
+		request: FastifyRequest<{ Querystring: ReadListUsersQuery }>,
 		reply: FastifyReply
 	) => {
-		try {
-			const { isActive, limit, page, role, search } = request.query;
+		const result = await this.readListUsersUseCase.execute(request.query);
+		return reply.status(200).send(result);
+	};
 
-			const result = await this.readListUsersUseCase.execute({
-				isActive,
-				limit,
-				page,
-				role,
-				search,
-			});
+	public readOne = async (
+		request: FastifyRequest<{ Params: { id: string } }>,
+		reply: FastifyReply
+	) => {
+		const { id } = request.params;
 
-			console.log("result", result);
+		const result = await this.readOneUserUseCase.execute(id);
+		return reply.status(200).send(result);
+	};
 
-			if (!result.success) {
-				return reply.status(400).send({
-					success: result.success,
-					data: result.data || null,
-					message: result.message,
-				});
-			}
+	public delete = async (
+		request: FastifyRequest<{ Params: { id: string } }>,
+		reply: FastifyReply
+	) => {
+		const { id } = request.params;
+		await this.deleteUserUseCase.execute(id);
 
-			return reply.status(200).send({
-				success: result.success,
-				data: result.data || null,
-				message: result.message,
-			});
-		} catch (error) {
-			request.log.error(error);
-			return reply.status(500).send({
-				success: false,
-				message: "Internal server error",
-				data: null,
-			});
-		}
+		return reply.status(200).send({
+			success: true,
+			message: "User deleted successfully",
+			data: null,
+		});
 	};
 }

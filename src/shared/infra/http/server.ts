@@ -5,9 +5,9 @@ import cookiePlugin from "../../../plugins/cookie.plugin.ts";
 import helmetPlugin from "../../../plugins/helmet.plugin.ts";
 import rateLimitPlugin from "../../../plugins/rate-limit.plugin.ts";
 import dbConnector from "../../../shared/infra/db/index.ts";
-import { MainContainer } from "../../container/index.ts";
 import mainRouter from "./routes";
 import containerPlugin from "../../container/container.plugin.ts";
+import { ValidationError } from "../../utils/validationError.ts";
 
 export async function buildServer() {
 	const server = await fastify({
@@ -21,6 +21,22 @@ export async function buildServer() {
 				},
 			},
 		},
+	});
+
+	server.setErrorHandler((error, request, reply) => {
+		if (error instanceof ValidationError) {
+			return reply.status(400).send({
+				success: false,
+				data: null,
+				message: error.message,
+			});
+		}
+
+		reply.status(500).send({
+			success: false,
+			data: null,
+			message: error.message,
+		});
 	});
 
 	await server.register(jwtPlugin);

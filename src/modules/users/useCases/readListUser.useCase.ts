@@ -1,6 +1,7 @@
 import { IUserRepository } from "../users.repository";
 import { ReadListUsersQuery, UserResponse } from "../user.dto";
 import { inject, injectable } from "tsyringe";
+import { ValidationError } from "../../../shared/utils/validationError";
 
 export interface ReadListUsersResult {
 	success: boolean;
@@ -29,8 +30,6 @@ export class ReadListUsersUseCase {
 			const { total, users } = await this.userRepository.findMany(query);
 			const { page = 1, limit = 20 } = query;
 
-			console.log("execute", query);
-
 			const totalPages = Math.ceil(total / limit);
 
 			return {
@@ -49,10 +48,7 @@ export class ReadListUsersUseCase {
 				message: "Users fetched successfully",
 			};
 		} catch (error) {
-			return {
-				success: false,
-				message: "Failed to fetch users",
-			};
+			throw new ValidationError("Failed to fetch users");
 		}
 	}
 }

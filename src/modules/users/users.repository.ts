@@ -11,7 +11,7 @@ import { inject, injectable } from "tsyringe";
 
 export interface IUserRepository {
 	findByEmail(email: string): Promise<TUser | null>;
-	findById(id: string): Promise<TUser | null>;
+	findById(id: string): Promise<UserResponse | null>;
 	create(data: CreateUserInput): Promise<UserResponse>;
 	update(id: string, data: UpdateUserInput): Promise<UserResponse>;
 	delete(id: string): Promise<boolean>;
@@ -33,9 +33,9 @@ export class UserRepository implements IUserRepository {
 
 		return result.length > 0 ? result[0] : null;
 	}
-	async findById(id: string): Promise<TUser | null> {
+	async findById(id: string): Promise<UserResponse | null> {
 		const result = await this.db.select().from(users).where(eq(users.id, id));
-		return result.length > 0 ? result[0] : null;
+		return result.length > 0 ? this.mapToResponse(result[0]) : null;
 	}
 	async create(data: CreateUserInput): Promise<UserResponse> {
 		const result = await this.db.insert(users).values(data).returning();
@@ -91,7 +91,7 @@ export class UserRepository implements IUserRepository {
 			filters.push(eq(users.role, role as any));
 		}
 
-		if (typeof query.isActive === "boolean") {
+		if (query.isActive !== undefined) {
 			filters.push(eq(users.isActive, query.isActive));
 		}
 

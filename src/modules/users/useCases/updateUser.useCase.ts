@@ -1,6 +1,7 @@
 import { IUserRepository } from "../users.repository";
 import { UpdateUserInput, UserResponse } from "../user.dto";
 import { inject, injectable } from "tsyringe";
+import { ValidationError } from "../../../shared/utils/validationError";
 
 export interface UpdateUserResult {
 	success: boolean;
@@ -17,19 +18,13 @@ export class UpdateUserUseCase {
 	async execute(id: string, data: UpdateUserInput): Promise<UpdateUserResult> {
 		try {
 			if (!id) {
-				return {
-					success: false,
-					message: "User id is required",
-				};
+				throw new ValidationError("User id is required");
 			}
 
 			const updatedUser = await this.userRepository.update(id, data);
 
 			if (!updatedUser || !updatedUser.id) {
-				return {
-					success: false,
-					message: "User not found",
-				};
+				throw new ValidationError("User not found");
 			}
 
 			return {

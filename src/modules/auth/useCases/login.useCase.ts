@@ -3,6 +3,7 @@ import { IUserRepository } from "../../users/users.repository";
 import { IPasswordHasher } from "../../../shared/interfaces/passwordHasher";
 import { ITokenService } from "../../../shared/interfaces/tokenService";
 import { inject, injectable } from "tsyringe";
+import { ValidationError } from "../../../shared/utils/validationError";
 
 export interface LoginResult {
 	success: boolean;
@@ -29,55 +30,42 @@ export class LoginUseCase {
 	) {}
 
 	async execute(input: LoginInput): Promise<LoginResult> {
-		try {
-			const user = await this.userRepository.findByEmail(input.email);
+		const user = await this.userRepository.findByEmail(input.email);
 
-			if (!user) {
-				return {
-					success: false,
-					message: "User not found",
-				};
-			}
-
-			const isPasswordValid = await this.passwordHasher.comparePassword(
-				input.password,
-				user.password
-			);
-			if (!isPasswordValid) {
-				return {
-					success: false,
-					message: "Invalid credentials",
-				};
-			}
-
-			const token = await this.tokenService.generate({
-				id: user.id,
-				email: user.email,
-				role: user.role,
-			});
-
-			const permissions = [user.role];
-
-			return {
-				success: true,
-				data: {
-					token,
-					user: {
-						id: user.id,
-						email: user.email,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						role: user.role,
-					},
-					permissions,
-				},
-				message: "Login successful",
-			};
-		} catch (error) {
-			return {
-				success: false,
-				message: "Internal server error",
-			};
+		if (!user) {
+			throw new ValidationError("User not found");
 		}
+
+		const isPasswordValid = await this.passwordHasher.comparePassword(
+			input.password,
+			user.password
+		);
+		if (!isPasswordValid) {
+			throw new ValidationError("Invalid credentials");
+		}
+
+		const token = await this.tokenService.generate({
+			id: user.id,
+			email: user.email,
+			role: user.role,
+		});
+
+		const permissions = [user.role];
+
+		return {
+			success: true,
+			data: {
+				token,
+				user: {
+					id: user.id,
+					email: user.email,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					role: user.role,
+				},
+				permissions,
+			},
+			message: "Login successful",
+		};
 	}
 }

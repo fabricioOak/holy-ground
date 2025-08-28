@@ -4,7 +4,44 @@ import { ApiPaginated, ApiResponse } from "../../shared/utils/responses";
 import { UserController } from "./users.controller";
 
 export async function usersRoutes(server: FastifyInstance) {
-	const { create, update, readlist } = server.container.resolve(UserController);
+	const {
+		create,
+		update,
+		delete: deleteUser,
+		readlist,
+		readOne,
+	} = server.container.resolve(UserController);
+
+	server.get(
+		"/",
+		{
+			preHandler: [server.authenticate],
+			schema: {
+				response: {
+					200: ApiPaginated(UserResponseDTO),
+				},
+				tags: ["Users"],
+				description: "Returns a list of all users",
+			},
+		},
+		readlist
+	);
+
+	server.get(
+		"/:id",
+		{
+			preHandler: [server.authenticate],
+			schema: {
+				response: {
+					200: ApiResponse(UserResponseDTO),
+					400: ApiResponse(null),
+				},
+				tags: ["Users"],
+				description: "Returns a user by id",
+			},
+		},
+		readOne
+	);
 
 	server.post(
 		"/",
@@ -39,18 +76,19 @@ export async function usersRoutes(server: FastifyInstance) {
 		update
 	);
 
-	server.get(
-		"/",
+	server.put(
+		"/soft-delete/:id",
 		{
 			preHandler: [server.authenticate],
 			schema: {
 				response: {
-					200: ApiPaginated(UserResponseDTO),
+					200: ApiResponse(null),
+					400: ApiResponse(null),
 				},
 				tags: ["Users"],
-				description: "Returns a list of all users",
+				description: "Soft delete an existing user",
 			},
 		},
-		readlist
+		deleteUser
 	);
 }
