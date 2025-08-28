@@ -2,6 +2,8 @@ import { FastifyInstance } from "fastify";
 import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from "./user.dto";
 import { ApiPaginated, ApiResponse } from "../../shared/utils/responses";
 import { UserController } from "./users.controller";
+import { authorize } from "../../shared/utils/permissions.util";
+import { EUserRoles } from "../../shared/enums/user.enum";
 
 export async function usersRoutes(server: FastifyInstance) {
 	const {
@@ -15,7 +17,12 @@ export async function usersRoutes(server: FastifyInstance) {
 	server.get(
 		"/",
 		{
-			preHandler: [server.authenticate],
+			preHandler: [
+				server.authenticate,
+				authorize({
+					allowed: [EUserRoles.CEMETERY_ADMIN, EUserRoles.SUPER_ADMIN],
+				}),
+			],
 			schema: {
 				response: {
 					200: ApiPaginated(UserResponseDTO),

@@ -1,18 +1,32 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { EUserRoles } from "../../shared/enums/user.enum";
 
-export const createRoleGuard = (allowedRoles: EUserRoles[]) => {
+interface AuthorizeOptions {
+	allowed?: EUserRoles[];
+	denied?: EUserRoles[];
+}
+
+export const authorize = (options: AuthorizeOptions) => {
 	return async (request: FastifyRequest, reply: FastifyReply) => {
 		if (!request.user) {
-			return reply.code(403).send({ message: "Acesso negado." });
+			return reply.code(403).send({
+				success: false,
+				message: "Access denied: user not authenticated.",
+			});
+		}
+		const userRole = request.user.role;
+		if (options.allowed && !options.allowed.includes(userRole)) {
+			return reply.code(403).send({
+				success: false,
+				message: "You have no privilege to access this route.",
+			});
 		}
 
-		const hasAccess = allowedRoles.includes(request.user.role);
-
-		if (!hasAccess) {
-			return reply
-				.code(403)
-				.send({ message: "Seu papel não permite esta ação." });
+		if (options.denied && options.denied.includes(userRole)) {
+			return reply.code(403).send({
+				success: false,
+				message: "You have no privilege to access this route.",
+			});
 		}
 	};
 };
